@@ -1,8 +1,12 @@
-#include <iostream>
+#include "main.hpp"
 
-using namespace std;
+int main()
+{
+	srand((unsigned)time(NULL));
 
-int main() {
-  cout << "Hello world" << endl;
-  return 0;
+	cout << "Hello world" << endl;
+
+	Jeu j{};
+
+	j.affiche();
 }
