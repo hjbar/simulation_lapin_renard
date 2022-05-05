@@ -10,11 +10,17 @@ int main()
 
 	j.affiche();
 
-	array<Animal, TAILLEGRILLE* TAILLEGRILLE> animaux = j.getPop().getT();
-	for(long unsigned int i = 0; i < animaux.size(); i++)
-	{
-		j.deplaceAnimal(animaux[int(i)]);
-	}
+	char c = ' ';
+	Ensemble e;
 
-	j.affiche();
+	while(c != 'q')
+	{
+		e = j.getPop().getIds();
+		for(int i = 0; i < e.cardinal(); i++)
+		{
+			j.deplaceAnimal(j.getPop().get(e.getCase(i)));
+			j.affiche();
+		}
+		cin >> c;
+	}
 }
