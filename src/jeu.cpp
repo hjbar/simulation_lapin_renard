@@ -347,6 +347,7 @@ void Jeu::deplaceLapin(Animal a)
 
 	deplaceCoord(a, cFin);
 
+	e.ajoute(indice);
 	naissance(a, cDepart, e);
 }
 
@@ -445,7 +446,7 @@ void Jeu::deplaceCoord(Animal a, Coord cFin)
 {
 	Coord cDepart = a.getCoord();
 	grille.setCase(a.getId(), cFin);
-	pop.changeCoord(a.getId(), cFin);
+	pop.changeCoord(a, cFin);
 	grille.videCase(cDepart);
 }
 
@@ -528,6 +529,9 @@ void Jeu::afficheNombreAnimal() const
 
 void Jeu::verifieAll() const
 {
+
+	verifieGrille();
+
 	Coord cGrille{0, 0};
 	Coord cPop{0, 0};
 	for(int i = 0; i < TAILLEGRILLE; i++)

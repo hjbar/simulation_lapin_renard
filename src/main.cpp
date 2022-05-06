@@ -41,6 +41,7 @@ int main()
 			j.deplaceAnimal(a);
 			cpt++;
 			cout << cpt << endl;
+			j.verifieAll();
 		}
 		j.affiche();
 		cin >> c;

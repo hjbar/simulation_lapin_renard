@@ -143,8 +143,11 @@ TEST_CASE("Reserve + Set")
 		runtime_error);
 }
 
-void Population::changeCoord(Id ident, Coord c)
+void Population::changeCoord(Animal a, Coord c)
 {
+
+	Id ident = a.getId();
+
 	for(long unsigned i = 0; i < t.size(); i++)
 	{
 		if(ident == t[int(i)].getId())
@@ -169,7 +172,7 @@ TEST_CASE("changeCoord")
 	Animal a{A.reserve(), Espece::Lapin, Coord{5, 5}};
 	A.setAnimal(a);
 
-	A.changeCoord(a.getId(), Coord{0, 0});
+	A.changeCoord(a, Coord{0, 0});
 
 	CHECK(A.getT()[a.getId()].getCoord() == Coord{0, 0});
 }

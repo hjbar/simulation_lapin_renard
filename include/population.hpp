@@ -51,10 +51,10 @@ public:
 	void setAnimal(Animal a);
 
 	/** Change la Coord d'un animal dans la population
-	 * @param ident un Id
+	 * @param a un Animal
 	 * @param c une Coord
 	**/
-	void changeCoord(Id ident, Coord c);
+	void changeCoord(Animal a, Coord c);
 
 	/** Supprime un animal de la population.
     * @param un Animal.
