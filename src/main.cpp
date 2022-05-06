@@ -8,19 +8,41 @@ int main()
 
 	Jeu j{};
 
+	j.verifieAll();
+
 	j.affiche();
 
+	int cpt = 0;
 	char c = ' ';
 	Ensemble e;
+	Animal a{};
+	Espece esp = Espece::Vide;
 
 	while(c != 'q')
 	{
 		e = j.getPop().getIds();
 		for(int i = 0; i < e.cardinal(); i++)
 		{
-			j.deplaceAnimal(j.getPop().get(e.getCase(i)));
-			j.affiche();
+			a = j.getPop().get(e.getCase(i));
+			cout << a.getCoord() << "  " << a.getId() << "  ";
+			esp = a.getEspece();
+			if(esp == Espece::Renard)
+			{
+				cout << "R" << endl;
+			}
+			else if(esp == Espece::Lapin)
+			{
+				cout << "L" << endl;
+			}
+			else
+			{
+				cout << "???" << endl;
+			}
+			j.deplaceAnimal(a);
+			cpt++;
+			cout << cpt << endl;
 		}
+		j.affiche();
 		cin >> c;
 	}
 }

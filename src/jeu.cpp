@@ -345,9 +345,7 @@ void Jeu::deplaceLapin(Animal a)
 	int indice = e.tire();
 	Coord cFin{indice};
 
-	grille.setCase(a.getId(), cFin);
-	a.setCoord(cFin);
-	grille.videCase(cDepart);
+	deplaceCoord(a, cFin);
 
 	naissance(a, cDepart, e);
 }
@@ -366,9 +364,7 @@ void Jeu::deplaceRenard(Animal a)
 		supprimeAnimal(lapin);
 		a.mange();
 
-		grille.setCase(a.getId(), cFin);
-		a.setCoord(cFin);
-		grille.videCase(cDepart);
+		deplaceCoord(a, cFin);
 	}
 
 	else if(eVide.cardinal() > 0)
@@ -376,9 +372,7 @@ void Jeu::deplaceRenard(Animal a)
 		int indice = eVide.tire();
 		Coord cFin{indice};
 
-		grille.setCase(a.getId(), cFin);
-		a.setCoord(cFin);
-		grille.videCase(cDepart);
+		deplaceCoord(a, cFin);
 	}
 
 	else
@@ -417,6 +411,76 @@ void Jeu::supprimeAnimal(Animal a)
 
 	grille.videCase(c);
 	pop.supprime(a);
+}
+
+TEST_CASE("supprimeAnimal")
+{
+	Jeu j{};
+
+	Ensemble e = j.getPop().getIds();
+	Animal a{};
+
+	for(int i = 0; i < e.cardinal(); i++)
+	{
+
+		a = j.getPop().get(e.getCase(i));
+
+		Id idA = a.getId();
+		Coord cA = a.getCoord();
+		Espece espA = a.getEspece();
+
+		CHECK(j.getPop().get(idA).getEspece() == espA);
+		CHECK(j.getPop().get(idA).getCoord() == cA);
+		CHECK(j.getPop().get(idA).getId() == idA);
+		CHECK(j.getGrille().getCase(cA) == idA);
+
+		j.supprimeAnimal(a);
+
+		CHECK_THROWS_AS(j.getPop().get(idA), invalid_argument);
+		CHECK(j.getGrille().getCase(cA) == -1);
+	}
+}
+
+void Jeu::deplaceCoord(Animal a, Coord cFin)
+{
+	Coord cDepart = a.getCoord();
+	grille.setCase(a.getId(), cFin);
+	pop.changeCoord(a.getId(), cFin);
+	grille.videCase(cDepart);
+}
+
+TEST_CASE("deplaceCoord")
+{
+	Jeu jeu{};
+
+	Ensemble e = jeu.getPop().getIds();
+	Coord c{0, 0};
+
+	for(int i = 0; i < TAILLEGRILLE; i++)
+	{
+		for(int j = 0; j < TAILLEGRILLE; j++)
+		{
+			if(jeu.getGrille().getCase(Coord{i, j}) == -1)
+			{
+				c = Coord{i, j};
+				break;
+			}
+		}
+	}
+
+	Animal a = jeu.getPop().get(e.getCase(0));
+
+	Coord cAvant = a.getCoord();
+	jeu.deplaceCoord(a, c);
+
+	Animal newA = jeu.getPop().get(e.getCase(0));
+	Coord cApres = newA.getCoord();
+
+	CHECK_FALSE(cAvant == c);
+	CHECK_FALSE(cApres == cAvant);
+	CHECK(cApres == c);
+	CHECK(jeu.getGrille().getCase(cAvant) == -1);
+	CHECK(jeu.getGrille().getCase(c) == newA.getId());
 }
 
 void Jeu::affiche() const
@@ -493,6 +557,7 @@ void Jeu::verifieAll() const
 		}
 	}
 
+	bool ok = false;
 	Ensemble ev = pop.getIds();
 	for(int i = 0; i < TAILLEGRILLE; i++)
 	{
@@ -504,10 +569,16 @@ void Jeu::verifieAll() const
 				{
 					if(grille.getCase(Coord{i, j}) == ev.getCase(k))
 					{
-						continue;
+						if(not ok)
+						{
+							ok = true;
+						}
 					}
 				}
-				throw runtime_error("L'animal est stocke n'est pas dans la population");
+				if(not ok)
+				{
+					throw runtime_error("L'animal stocke n'est pas dans la population");
+				}
 			}
 		}
 	}

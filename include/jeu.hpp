@@ -56,26 +56,35 @@ public:
    *le deplacement est possible, false sinon
    * @param ident un Id
    * @return un booléen
-   **//**
-	bool deplaceAnimal(Animal a);
-	**/
-	/** Deplace un Animal d'Id ident sur une case voisine libre. Renvoie true si
-   *le deplacement est possible, false sinon
-   * @param ident un Id
-   * @return un booléen
    **/
 	void deplaceAnimal(Animal a);
 
+	/** Deplace un Animal si celui-ci est un Lapin
+	 * @param a un Animal
+	**/
 	void deplaceLapin(Animal a);
 
+	/** Deplace un Animal si celui-ci est un Renard
+	 * @param a un Animal
+	**/
 	void deplaceRenard(Animal a);
 
+	/** Simule la naissance d'un Lapin seulement s'il y a reproduction d'apres les regles du jeu
+	 * @param a un Animal
+	 * @param c une Coord
+	 * @param ens un Ensemble de cases vides
+	**/
 	void naissance(Animal a, Coord c, Ensemble ens);
 
+	/** Simule la naissance d'un Renard seulement s'il y a reproduction d'apres les regles du jeu
+	 * @param a un Animal
+	 * @param c une Coord
+	 * @param ens un Ensemble de cases vides
+	**/
 	void naissance(Animal a, Coord c);
 
-	/**
-   *
+	/** Supprimer un Animal du jeu
+   * @param a un Animal
   **/
 	void supprimeAnimal(Animal a);
 
@@ -84,6 +93,12 @@ public:
 
 	/** Fonction qui affiche le nombre de Lapins et de Renards **/
 	void afficheNombreAnimal() const;
+
+	/** Fonction qui change les Coord d'un Animal
+	 * @param a un Animal
+	 * @param cFin une Coord
+	**/
+	void deplaceCoord(Animal a, Coord cFin);
 
 	/** Fonction qui verifie la coherence des données, souleve une erreur si ce
    * n'est pas le cas **/

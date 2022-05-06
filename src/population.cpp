@@ -143,6 +143,37 @@ TEST_CASE("Reserve + Set")
 		runtime_error);
 }
 
+void Population::changeCoord(Id ident, Coord c)
+{
+	for(long unsigned i = 0; i < t.size(); i++)
+	{
+		if(ident == t[int(i)].getId())
+		{
+
+			if(t[int(i)].getEspece() == Espece::Vide)
+			{
+				throw invalid_argument("On ne peut pas changer la Coord d'un Animal Vide");
+			}
+
+			t[int(i)].setCoord(c);
+			return;
+		}
+	}
+
+	throw runtime_error("Id/Animal non present dans la population");
+}
+
+TEST_CASE("changeCoord")
+{
+	Population A{};
+	Animal a{A.reserve(), Espece::Lapin, Coord{5, 5}};
+	A.setAnimal(a);
+
+	A.changeCoord(a.getId(), Coord{0, 0});
+
+	CHECK(A.getT()[a.getId()].getCoord() == Coord{0, 0});
+}
+
 void Population::supprime(Animal a)
 {
 	if(a.getEspece() == Espece::Vide)
