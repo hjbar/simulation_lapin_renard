@@ -17,6 +17,19 @@ public:
 	/** Initialise une population vide d'Animal**/
 	Population();
 
+	//Getters
+
+	/** Renvoie l'Ensemble des identifiants d'une certaine Espece de la Population
+   * @param e une Espece
+   * @return un Ensemble
+	**/
+	Ensemble getIdsEspece(Espece e) const;
+
+	/** Renvoie le tableau contnenant les cases libres de la population.
+   * @return tableau d'entiers des cases libres.
+	**/
+	vector<int> getCasesLibres() const;
+
 	//Méthodes
 
 	/** Permet de retrouver et de renvoyer un animal dans la population à partir de son identifiant.
@@ -29,11 +42,6 @@ public:
     * @return Ensemble d'identifiants contenus dans la population.
   **/
 	Ensemble getIds() const;
-
-	/** Renvoie le tableau contnenant les cases libres de la population.
-    * @return tableau d'entiers des cases libres.
-  **/
-	vector<int> getCasesLibres() const;
 
 	/** Renvoie le tebleau de la population
 	 * @return le array t de la population
@@ -54,7 +62,27 @@ public:
 	 * @param a un Animal
 	 * @param c une Coord
 	**/
-	void changeCoord(Animal a, Coord c);
+	void changeCoord(Animal& a, Coord c);
+
+	/** Reset l'age d'un Animal
+	 * @param a un Animal
+	**/
+	void resetAgeAnimal(Animal& a);
+
+	/** L'Animal donné en parametre mange
+	 * @param a un Animal
+	**/
+	void mangeAnimal(Animal& a);
+
+	/** Fait jeuner l'Animal donne en parametre
+	 * @param a un Animal
+	**/
+	void jeuneAnimal(Animal& a);
+
+	/** Fait vieillir l'Animal donne en parametre
+	 * @param a un Animal
+	**/
+	void vieillirAnimal(Animal& a);
 
 	/** Supprime un animal de la population.
     * @param un Animal.
@@ -62,6 +90,7 @@ public:
 	void supprime(Animal a);
 
 private:
+	//Attributs
 	array<Animal, TAILLEGRILLE * TAILLEGRILLE> t;
 	vector<int> casesLibres;
 };

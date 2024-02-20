@@ -1,5 +1,6 @@
 NAME := lapin
 NAME_TEST := test
+NAME_VIDEO := video
 
 SRC_DIR := src
 INCLUDE_DIR := include
@@ -14,19 +15,21 @@ LDFLAGS := -fPIE
 
 TARGET := $(NAME).exe
 TARGET_TEST := $(NAME_TEST).exe
+TARGET_VIDEO := $(NAME_VIDEO).exe
 
 HPP_FILES := $(wildcard $(INCLUDE_DIR)/*.hpp)
 CPP_FILES := $(HPP_FILES:$(INCLUDE_DIR)/%.hpp=$(SRC_DIR)/%.cpp)
 
 O_FILES_ALL := $(CPP_FILES:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
-O_FILES := $(filter-out $(BUILD_DIR)/test.o, $(O_FILES_ALL))
-O_FILES_TEST := $(filter-out $(BUILD_DIR)/main.o, $(O_FILES_ALL))
+O_FILES := $(filter-out $(BUILD_DIR)/test.o $(BUILD_DIR)/video.o, $(O_FILES_ALL))
+O_FILES_TEST := $(filter-out $(BUILD_DIR)/main.o $(BUILD_DIR)/video.o, $(O_FILES_ALL))
+O_FILES_VIDEO := $(filter-out $(BUILD_DIR)/main.o $(BUILD_DIR)/test.o, $(O_FILES_ALL))
 
-.PHONY: clean mrproper
+.PHONY: clean supprPhoto mrproper
 
 default: build
 
-all: build test
+all: build video test
 
 build: $(TARGET)
 
@@ -35,6 +38,14 @@ check: $(TARGET_TEST)
 
 test: $(TARGET_TEST)
 	./$(TARGET_TEST)
+
+video: $(TARGET_VIDEO)
+
+exec: $(TARGET_VIDEO)
+	./$(TARGET_VIDEO)
+	convert -scale 300 -delay 10 img*.ppm movie.gif
+	rm -f img*.ppm
+	firefox movie.gif
 
 $(BUILD_DIR):
 	mkdir -p $@
@@ -48,12 +59,20 @@ $(TARGET): $(BUILD_DIR) $(O_FILES)
 $(TARGET_TEST): $(BUILD_DIR) $(O_FILES_TEST)
 	$(CXX) -o $@ $(O_FILES_TEST) $(LDFLAGS)
 
+$(TARGET_VIDEO): $(BUILD_DIR) $(O_FILES_VIDEO)
+	$(CXX) -o $@ $(O_FILES_VIDEO) $(LDFLAGS)
+
 clean:
 	rm -rf $(BUILD_DIR)
 
-mrproper: clean
+supprPhoto:
+	rm -f img*.ppm
+
+mrproper: clean supprPhoto
 	rm -f $(TARGET)
 	rm -f $(TARGET_TEST)
+	rm -f $(TARGET_VIDEO)
+	rm -f movie.gif
 
 fmt:
 	find src/ -iname \*.cpp | xargs clang-format -style=file -i

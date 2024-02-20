@@ -48,6 +48,16 @@ public:
 	**/
 	int getNourriture() const;
 
+	/** Renvoie l'age d'un Animal
+	 * @return un int
+	**/
+	int getAge() const;
+
+	/** Renvoie le Genre d'un Animal
+	 * @retur un Genre
+	**/
+	Genre getGenre() const;
+
 	//Setter
 
 	/** Change les Coord d'un Animal
@@ -68,10 +78,16 @@ public:
 	/** Diminu le niveau de nourriture d'un Animal **/
 	void jeune();
 
+	/** Augmente l'age de l'Animal de une unite **/
+	void vieillit();
+
 	/** Renvoie true si l'Animal meurt de fin, false sinon
 	 * @return un booléen
 	**/
 	bool meurt() const;
+
+	/** Reset l'age d'un Animal en le mettant a 0 **/
+	void resetAge();
 
 	/** Renvoie true si le renard se reproduit, false sinon
 	 * @return un booléen
@@ -90,4 +106,6 @@ private:
 	Espece espece;
 	Coord coordonnees;
 	int nourriture;
+	int age;
+	Genre genre;
 };

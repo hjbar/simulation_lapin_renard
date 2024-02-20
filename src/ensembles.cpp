@@ -44,6 +44,44 @@ TEST_CASE("estVide + cardinal")
 	CHECK(a.cardinal() == 0);
 }
 
+bool Ensemble::possede(int n) const
+{
+	for(int i = 0; i < card; i++)
+	{
+		if(t[i] == n)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+TEST_CASE("possede")
+{
+	Ensemble e{};
+
+	CHECK_FALSE(e.possede(5));
+
+	e.ajoute(5);
+	CHECK(e.possede(5));
+
+	e.retire(5);
+	CHECK_FALSE(e.possede(5));
+
+	e.ajoute(10);
+	e.ajoute(10);
+	e.ajoute(5);
+	e.ajoute(10);
+	e.ajoute(10);
+	e.ajoute(5);
+
+	CHECK(e.possede(5));
+	e.retire(5);
+	CHECK(e.possede(5));
+	e.retire(5);
+	CHECK_FALSE(e.possede(5));
+}
+
 void Ensemble::ajoute(int n)
 {
 	if(card == MAXCARD)
@@ -52,6 +90,27 @@ void Ensemble::ajoute(int n)
 	}
 	t[card] = n;
 	card++;
+}
+
+void Ensemble::retire(int n)
+{
+	if(card == 0)
+	{
+		throw runtime_error("Il n'y a pas d'element a retirer, l'ensemble est vide");
+	}
+
+	for(int i = 0; i < card; i++)
+	{
+		if(t[i] == n)
+		{
+			t[i] = t[card - 1];
+			t[card - 1] = -1;
+			card--;
+			return;
+		}
+	}
+
+	throw runtime_error("L'element n n'est pas dans l'Ensemble");
 }
 
 int Ensemble::tire()
@@ -68,7 +127,7 @@ int Ensemble::tire()
 	return res;
 }
 
-TEST_CASE("ajoute + retire")
+TEST_CASE("ajoute + tire + retire")
 {
 	Ensemble a{};
 	a.ajoute(10);
@@ -105,6 +164,14 @@ TEST_CASE("ajoute + retire")
 
 	Ensemble d{};
 	CHECK_THROWS_AS((d.tire()), runtime_error);
+	CHECK_THROWS_AS((d.retire(5)), runtime_error);
+
+	d.ajoute(10);
+	CHECK_THROWS_AS((d.retire(5)), runtime_error);
+
+	CHECK(d.cardinal() == 1);
+	d.retire(10);
+	CHECK(d.cardinal() == 0);
 }
 
 int Ensemble::getCase(int n) const

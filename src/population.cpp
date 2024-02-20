@@ -1,5 +1,7 @@
 #include "population.hpp"
 
+//Constructeurs
+
 Population::Population()
 	: t{}
 	, casesLibres{}
@@ -28,6 +30,8 @@ TEST_CASE("Constructeur Population")
 	CHECK(a.getCasesLibres().size() == TAILLEGRILLE * TAILLEGRILLE);
 }
 
+//Getters
+
 vector<int> Population::getCasesLibres() const
 {
 	return casesLibres;
@@ -37,6 +41,8 @@ array<Animal, TAILLEGRILLE * TAILLEGRILLE> Population::getT() const
 {
 	return t;
 }
+
+//Methodes
 
 Animal Population::get(Id identifiant) const
 {
@@ -97,6 +103,59 @@ TEST_CASE("getIds")
 	}
 }
 
+Ensemble Population::getIdsEspece(Espece e) const
+{
+	if(e == Espece::Vide)
+	{
+		throw invalid_argument("Un Animal n'a pas d'Id");
+	}
+
+	Ensemble ident{};
+	for(long unsigned int i = 0; i < t.size(); i++)
+	{
+		if(t[i].getEspece() == e)
+			ident.ajoute(t[i].getId());
+	}
+	return ident;
+}
+
+TEST_CASE("getIdsEspece")
+{
+	Population a{};
+	Ensemble eL = a.getIdsEspece(Espece::Lapin);
+	Ensemble eR = a.getIdsEspece(Espece::Renard);
+	CHECK(eL.cardinal() == 0);
+	CHECK(eR.cardinal() == 0);
+	CHECK_THROWS_AS(a.getIdsEspece(Espece::Vide), invalid_argument);
+
+	for(int i = 0; i < 10; i++)
+	{
+		a.setAnimal(Animal{i + 5, Espece::Lapin, Coord{0, 0}});
+		eL = a.getIdsEspece(Espece::Lapin);
+		eR = a.getIdsEspece(Espece::Renard);
+		CHECK(eL.cardinal() == i + 1);
+		CHECK(eR.cardinal() == 0);
+	}
+
+	for(int i = 0; i < 10; i++)
+	{
+		a.setAnimal(Animal{i + 50, Espece::Renard, Coord{0, 0}});
+		eL = a.getIdsEspece(Espece::Lapin);
+		eR = a.getIdsEspece(Espece::Renard);
+		CHECK(eR.cardinal() == i + 1);
+		CHECK(eL.cardinal() == 10);
+	}
+
+	for(int i = 0; i < 10; i++)
+	{
+		a.setAnimal(Animal{i + 100, Espece::Vide, Coord{0, 0}});
+		eL = a.getIdsEspece(Espece::Lapin);
+		eR = a.getIdsEspece(Espece::Renard);
+		CHECK(eR.cardinal() == 10);
+		CHECK(eL.cardinal() == 10);
+	}
+}
+
 int Population::reserve()
 {
 	if(casesLibres.size() == 0)
@@ -109,14 +168,17 @@ int Population::reserve()
 void Population::setAnimal(Animal a)
 {
 	int index = a.getId();
+
 	if(index == -1)
 	{
 		throw runtime_error("Pas de place dans la population.");
 	}
+
 	if(t[index].getEspece() != Espece::Vide)
 	{
 		throw runtime_error("Il y a déjà un animal dans cette case");
 	}
+
 	t[index] = a;
 }
 
@@ -143,7 +205,7 @@ TEST_CASE("Reserve + Set")
 		runtime_error);
 }
 
-void Population::changeCoord(Animal a, Coord c)
+void Population::changeCoord(Animal& a, Coord c)
 {
 
 	Id ident = a.getId();
@@ -159,6 +221,7 @@ void Population::changeCoord(Animal a, Coord c)
 			}
 
 			t[int(i)].setCoord(c);
+			a.setCoord(c);
 			return;
 		}
 	}
@@ -175,6 +238,182 @@ TEST_CASE("changeCoord")
 	A.changeCoord(a, Coord{0, 0});
 
 	CHECK(A.getT()[a.getId()].getCoord() == Coord{0, 0});
+	CHECK(a.getCoord() == Coord{0, 0});
+}
+
+void Population::resetAgeAnimal(Animal& a)
+{
+	Id ident = a.getId();
+
+	for(long unsigned i = 0; i < t.size(); i++)
+	{
+		if(ident == t[int(i)].getId())
+		{
+
+			if(t[int(i)].getEspece() == Espece::Vide)
+			{
+				throw invalid_argument("On ne peut pas changer la Coord d'un Animal Vide");
+			}
+
+			t[int(i)].resetAge();
+			a.resetAge();
+			return;
+		}
+	}
+
+	throw runtime_error("Id/Animal non present dans la population");
+}
+
+TEST_CASE("resetAgeAnimal")
+{
+	Population A{};
+	Animal a{A.reserve(), Espece::Lapin, Coord{5, 5}};
+	A.setAnimal(a);
+
+	A.resetAgeAnimal(a);
+
+	CHECK(A.getT()[a.getId()].getAge() == 0);
+	CHECK(a.getAge() == 0);
+}
+
+void Population::mangeAnimal(Animal& a)
+{
+	if(a.getEspece() != Espece::Renard)
+	{
+		throw invalid_argument("Seul le Renard se nourrit");
+	}
+
+	Id ident = a.getId();
+
+	for(long unsigned i = 0; i < t.size(); i++)
+	{
+		if(ident == t[int(i)].getId())
+		{
+			t[int(i)].mange();
+			a.mange();
+			return;
+		}
+	}
+
+	throw runtime_error("Id/Animal non present dans la population");
+}
+
+void Population::jeuneAnimal(Animal& a)
+{
+	if(a.getEspece() != Espece::Renard)
+	{
+		throw invalid_argument("Seul le Renard jeune");
+	}
+
+	Id ident = a.getId();
+
+	for(long unsigned i = 0; i < t.size(); i++)
+	{
+		if(ident == t[int(i)].getId())
+		{
+			t[int(i)].jeune();
+			a.jeune();
+			return;
+		}
+	}
+
+	throw runtime_error("Id/Animal non present dans la population");
+}
+
+void Population::vieillirAnimal(Animal& a)
+{
+	if(a.getEspece() == Espece::Vide)
+	{
+		throw invalid_argument("L'Animal Vide ne peut pas vieillir");
+	}
+	if(a.getAge() < 0)
+	{
+		throw runtime_error("L'age de cet Animal n'est pas valide");
+	}
+	if(a.getEspece() == Espece::Lapin)
+	{
+		if(a.getAge() >= MaxAgeLapin)
+		{
+			throw runtime_error("Ce Lapin possede deja l'age maximal");
+		}
+	}
+	if(a.getEspece() == Espece::Renard)
+	{
+		if(a.getAge() >= MaxAgeRenard)
+		{
+			throw runtime_error("Ce Renard possede deja l'age maximal");
+		}
+	}
+
+	Id ident = a.getId();
+
+	for(long unsigned i = 0; i < t.size(); i++)
+	{
+		if(ident == t[int(i)].getId())
+		{
+			t[int(i)].vieillit();
+			a.vieillit();
+			return;
+		}
+	}
+
+	throw runtime_error("Id/Animal non present dans la population");
+}
+
+TEST_CASE("mangeAnimal + jeuneAnimal + vieillirAnimal")
+{
+	Population A{};
+	Animal a{A.reserve(), Espece::Renard, Coord{5, 5}};
+	A.setAnimal(a);
+
+	A.mangeAnimal(a);
+
+	CHECK(A.getT()[a.getId()].getNourriture() == FoodInit + FoodLapin);
+	CHECK(A.getT()[a.getId()].getNourriture() == 10);
+	CHECK(a.getNourriture() == FoodInit + FoodLapin);
+	CHECK(a.getNourriture() == 10);
+
+	A.jeuneAnimal(a);
+
+	CHECK(A.getT()[a.getId()].getNourriture() == (FoodInit + FoodLapin) - 1);
+	CHECK(A.getT()[a.getId()].getNourriture() == 9);
+	CHECK(a.getNourriture() == (FoodInit + FoodLapin) - 1);
+	CHECK(a.getNourriture() == 9);
+
+	int ageA = a.getAge();
+	A.vieillirAnimal(a);
+
+	CHECK(A.getT()[a.getId()].getAge() == ageA + 1);
+	CHECK(a.getAge() == ageA + 1);
+
+	ageA = a.getAge();
+	for(int i = 0; i < MaxAgeRenard - ageA; i++)
+	{
+		A.vieillirAnimal(a);
+	}
+	CHECK(A.getT()[a.getId()].getAge() == MaxAgeRenard);
+	CHECK(a.getAge() == MaxAgeRenard);
+	CHECK_THROWS_AS(A.vieillirAnimal(a), runtime_error);
+
+	Animal v{};
+	CHECK_THROWS_AS(A.mangeAnimal(v), invalid_argument);
+	CHECK_THROWS_AS(A.jeuneAnimal(v), invalid_argument);
+	CHECK_THROWS_AS(A.vieillirAnimal(v), invalid_argument);
+
+	Animal r{10, Espece::Renard, Coord{5, 5}};
+	CHECK_THROWS_AS(A.mangeAnimal(r), runtime_error);
+	CHECK_THROWS_AS(A.jeuneAnimal(r), runtime_error);
+
+	Animal l{0, Espece::Lapin, Coord{0, 0}};
+	A.setAnimal(l);
+	int ageL = l.getAge();
+	for(int i = 0; i < MaxAgeLapin - ageL; i++)
+	{
+		A.vieillirAnimal(l);
+	}
+	CHECK(A.getT()[l.getId()].getAge() == MaxAgeLapin);
+	CHECK(l.getAge() == MaxAgeLapin);
+	CHECK_THROWS_AS(A.vieillirAnimal(l), runtime_error);
 }
 
 void Population::supprime(Animal a)

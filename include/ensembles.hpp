@@ -36,10 +36,21 @@ public:
 	**/
 	int cardinal() const;
 
+	/** Renvoie true si l'Ensemble possede e, false sinon
+	 * @param n en entier
+	 * @return un booleen
+	**/
+	bool possede(int n) const;
+
 	/** Ajoute un entier n à un Ensemble
 	 * @param n un entier
 	**/
 	void ajoute(int n);
+
+	/** Retire l'element valant n d'un Ensemble
+	 * @param n un entier
+	**/
+	void retire(int n);
 
 	/** Renvoie et supprime un élément n d'un Ensemble
 	 * @return n un entier

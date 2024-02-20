@@ -1,4 +1,4 @@
-#include "main.hpp"
+#include "video.hpp"
 
 int main()
 {
@@ -8,17 +8,22 @@ int main()
 
 	j.verifieAll();
 
-	j.affiche();
-
-	char c = ' ';
-	cin >> c;
 	Ensemble eL;
 	Ensemble eR;
 	Ensemble e;
 	Id ident;
 	Animal a{};
 
-	while(c != 'q')
+	int cptFichier = 0;
+	const int nbTour = 1000;
+
+	for(int i = 0; i < 20; i++)
+	{
+		j.genereImage(cptFichier);
+		cptFichier++;
+	}
+
+	for(int i = 0; i < nbTour; i++)
 	{
 		eL = j.getPop().getIdsEspece(Espece::Lapin);
 		eR = j.getPop().getIdsEspece(Espece::Renard);
@@ -45,8 +50,9 @@ int main()
 			}
 		}
 
-		j.affiche();
-		cin >> c;
+		j.genereImage(cptFichier);
+		cptFichier++;
 	}
+
 	return 0;
 }

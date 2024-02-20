@@ -41,5 +41,6 @@ public:
 	void setCase(Id ident, Coord c);
 
 private:
+	//Attributs
 	array<array<Id, TAILLEGRILLE>, TAILLEGRILLE> g;
 };

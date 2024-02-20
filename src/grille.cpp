@@ -1,6 +1,7 @@
 #include "grille.hpp"
 
 //Constructeurs
+
 Grille::Grille()
 	: g{}
 {
@@ -13,17 +14,7 @@ Grille::Grille()
 	}
 }
 
-bool Grille::caseVide(Coord c) const
-{
-	return g[c.getX()][c.getY()] == -1;
-}
-
-Id Grille::getCase(Coord c) const
-{
-	return g[c.getX()][c.getY()];
-}
-
-TEST_CASE("Constructeur vide")
+TEST_CASE("Constructeur vide + caseVide")
 {
 	Grille g{};
 	for(int i = 0; i < TAILLEGRILLE; i++)
@@ -34,6 +25,18 @@ TEST_CASE("Constructeur vide")
 			CHECK(g.caseVide(Coord{i, j}));
 		}
 	}
+}
+
+//Methodes
+
+bool Grille::caseVide(Coord c) const
+{
+	return g[c.getX()][c.getY()] == -1;
+}
+
+Id Grille::getCase(Coord c) const
+{
+	return g[c.getX()][c.getY()];
 }
 
 void Grille::videCase(Coord c)
